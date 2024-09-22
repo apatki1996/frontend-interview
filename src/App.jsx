@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [clicks, setClicks] = useState([]);
+  const [stack, setStack] = useState([]);
+
+  function handleClick({pageX, pageY}) {
+    setClicks([...clicks, { pageX, pageY }]);
+  }
+
+  function handleUndo() {
+    const lastClick = clicks.pop();
+    setStack([...stack, lastClick]);
+    setClicks([...clicks]);
+  }
+
+  function handleRedo() {
+    const lastClick = stack.pop();
+    setClicks([...clicks, lastClick]);
+    setStack([...stack]);
+  }
+
+  function handleClear() {
+    setClicks([]);
+    setStack([]);
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <button onClick={handleUndo}>Undo</button>
+      <button onClick={handleRedo}>Redo</button>
+      <button onClick={handleClear}>Clear</button>
+      <div className="full" onClick={handleClick}>
+        {clicks.map((click, index) => (
+          <div
+            key={index}
+            className="click"
+            style={{ left: click.pageX, top: click.pageY }}
+          ></div>
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
